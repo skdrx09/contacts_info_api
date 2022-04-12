@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from uuid import UUID, uuid4
 from enum import Enum
@@ -19,4 +19,4 @@ class Contact(BaseModel):               # DataBase model class
 class ContactUpdateRequest(BaseModel):
     new_f_name: Optional[str]
     new_l_name: Optional[str]
-    new_gender: Optional[list[Gender]]
+    new_gender: Optional[List[Gender]]

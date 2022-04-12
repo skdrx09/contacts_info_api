@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import uuid4, UUID
 from fastapi import FastAPI, HTTPException
-from uvicorn import uvicorn
+import uvicorn
 from models import Contact, Gender, ContactUpdateRequest
 
 app = FastAPI()
