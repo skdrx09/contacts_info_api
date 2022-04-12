@@ -1,9 +1,12 @@
 from typing import List, Optional
 from uuid import uuid4, UUID
 from fastapi import FastAPI, HTTPException
+from uvicorn import uvicorn
 from models import Contact, Gender, ContactUpdateRequest
 
 app = FastAPI()
+
+
 
 db: List[Contact] = [
     Contact(
@@ -76,3 +79,7 @@ async def del_contact(contact_id: UUID):
         status_code=404,
         detail=f"Contact with id: {contact_id} doest not exist"
     )
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
