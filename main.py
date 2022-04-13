@@ -1,5 +1,6 @@
 from typing import List, Optional
 from uuid import uuid4, UUID
+import uuid
 from fastapi import FastAPI, HTTPException
 import uvicorn
 from models import Contact, Gender, ContactUpdateRequest
@@ -43,6 +44,8 @@ async def list_contacts():
 
 @app.post("/contacts/")
 async def add_contact(contact: Contact):
+    new_id = uuid4()
+    contact.id = new_id
     db.append(contact)
     return "id:", contact.id
 
