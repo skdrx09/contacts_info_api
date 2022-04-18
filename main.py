@@ -50,7 +50,6 @@ async def add_contact(contact: Contact):
     return "id:", contact.id
     
 
-
 @app.put("/contacts/{contact_id}")
 async def update_contact(contact_update: ContactUpdateRequest, contact_id: UUID):
     found_id = 0
