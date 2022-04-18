@@ -19,4 +19,4 @@ class Contact(BaseModel):               # DataBase model class
 class ContactUpdateRequest(BaseModel):
     new_f_name: Optional[str]
     new_l_name: Optional[str]
-    new_gender: Optional[List[Gender]]
+    new_gender: Optional[Gender]  
