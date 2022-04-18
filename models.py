@@ -1,7 +1,7 @@
-from typing import Optional, List
-from pydantic import BaseModel
-from uuid import UUID, uuid4
 from enum import Enum
+from typing import List, Optional
+from uuid import UUID, uuid4
+from pydantic import BaseModel
 
 
 class Gender(str, Enum):                # Accepts only two gender options
