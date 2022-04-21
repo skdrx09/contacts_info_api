@@ -1,18 +1,17 @@
 from typing import List, Optional
 from uuid import uuid4, UUID
-import uuid
 from fastapi import FastAPI, HTTPException
 import uvicorn
-from models import Contact, Gender, ContactUpdateRequest
+from data.models import Contact, Gender, ContactUpdateRequest
+from data.mongo_setup import global_init
 
 app = FastAPI()
-
-
+global_init()
 
 db: List[Contact] = [
     Contact(
         id=UUID("339b4090-8ea9-4f68-b869-c79d051e1f3c"),
-        f_name="Juleta",
+        f_name="Julieta",
         l_name="Roca",
         gender=Gender.female,
     ),
