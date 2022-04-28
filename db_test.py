@@ -11,6 +11,7 @@ def new_contact(f_name: str, l_name: str, gender: str) -> Contact:
     new_contact.gender = gender
 
     new_contact.save()
+    
 
     return new_contact
 
