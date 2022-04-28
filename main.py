@@ -4,6 +4,8 @@ from fastapi import FastAPI, HTTPException
 import uvicorn
 from data.models import Contact, Gender, ContactUpdateRequest
 from data.mongo_setup import global_init
+#from data.Contact import Contact, ContactUpdateRequest
+
 
 app = FastAPI()
 global_init()
@@ -28,6 +30,16 @@ db: List[Contact] = [
         gender=Gender.male,
     )
 ]
+
+'''def new_contact(f_name: str, l_name: str, gender: str) -> Contact:
+    new_contact = Contact()
+    new_contact.f_name = f_name
+    new_contact.l_name = l_name
+    new_contact.gender = gender
+
+    new_contact.save()
+
+    return new_contact'''
 
 
 @app.get("/")
