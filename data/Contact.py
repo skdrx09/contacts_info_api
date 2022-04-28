@@ -1,5 +1,6 @@
+from secrets import choice
 from mongoengine.fields import StringField, UUIDField, DateTimeField, EnumField
-from mongoengine import Document
+from mongoengine import Document, ValidationError
 import datetime
 from enum import Enum
 
@@ -9,15 +10,23 @@ class Gender(str, Enum):                # Accepts only two gender options
     female = "female"
 
 
-class ContactDB(Document):                                            # DataBase model class
+GENDER = (("M", "Male"), ("F", "Female"))
+
+def _not_empty(val):
+    if not val:
+        raise ValidationError('value can not be empty')
+
+
+class Contact(Document):                                            # DataBase model class
     id = UUIDField                                                    # Generates a random id number
     registered_date = DateTimeField(default=datetime.datetime.now)
-    f_name = StringField(required=True)
-    l_name = StringField(required=True)
-    gender = EnumField(Gender, required=False)                                        # gender is of Gender class type (male/female)
+    f_name = StringField(required=True, validation=_not_empty)
+    l_name = StringField(required=True, validation=_not_empty)
+    #gender = EnumField(Gender, required=False)                                        # gender is of Gender class type (male/female)
+    gender = StringField(required=False, choices=GENDER)
 
     meta = {                                                          # Mongodb stuff
-        'db_alias': 'core',
+        'db_alias': 'my_db',
         'collection': 'contacts'
     }
 
