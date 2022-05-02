@@ -12,6 +12,7 @@ class Gender(str, Enum):                # Accepts only two gender options
 
 GENDER = (("M", "Male"), ("F", "Female"))
 
+
 def _not_empty(val):
     if not val:
         raise ValidationError('value can not be empty')
@@ -22,7 +23,7 @@ class Contact(Document):                                            # DataBase m
     registered_date = DateTimeField(default=datetime.datetime.now)
     f_name = StringField(required=True, validation=_not_empty)
     l_name = StringField(required=True, validation=_not_empty)
-    #gender = EnumField(Gender, required=False)                                        # gender is of Gender class type (male/female)
+    # gender = EnumField(Gender, required=False)                                        # gender is of Gender class type (male/female)
     gender = StringField(required=False, choices=GENDER)
 
     meta = {                                                          # Mongodb stuff
