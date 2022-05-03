@@ -3,6 +3,7 @@ from mongoengine.fields import StringField, UUIDField, DateTimeField, EnumField
 from mongoengine import Document, ValidationError
 import datetime
 from enum import Enum
+from typing import Optional
 
 
 class Gender(str, Enum):                # Accepts only two gender options
