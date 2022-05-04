@@ -7,4 +7,6 @@ def global_init():
     #                    host='mongodb+srv://admin:<1346795>@clusterunit01.ngqrj.mongodb.net/ClusterUnit01?retryWrites=true&w=majority',
     #                    port='27017')
     # connect(alias="my_db", host='mongodb+srv://admin:<1346795>@clusterunit01.ngqrj.mongodb.net/ClusterUnit01?retryWrites=true&w=majority')
-    connect(alias="my_db", host='mongodb+srv://admin:1346795@clusterunit01.ngqrj.mongodb.net/my_db?retryWrites=true&w=majority')
+    # connection_string = "mongodb+srv://<USER>:<PASSWORD>@<CLUSTER>/<COLLECTION>" (Format to use)
+    db = connect(alias="my_db", host='mongodb+srv://admin:1346795@clusterunit01.ngqrj.mongodb.net/my_db?retryWrites=true&w=majority')
+    return db

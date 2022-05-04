@@ -2,14 +2,31 @@ from data.mongo_setup import global_init
 from data.Contact import Contact, ContactUpdateRequest
 from mongoengine.errors import ValidationError
 from uuid import UUID
-from mongoengine import QuerySet, UUIDField
+from mongoengine import QuerySet, UUIDField, connect
+from mongoengine import *
 from typing import Optional
 from fastapi import FastAPI
 import uvicorn
 
 
 app = FastAPI()
-global_init()
+# db = global_init()
+db = connect(alias="my_db", host='mongodb+srv://admin:1346795@clusterunit01.ngqrj.mongodb.net/my_db?retryWrites=true&w=majority')
+
+
+@app.get("/contacts/")
+async def query_contacts():
+    data = db.objects   # REVISAR
+    return data
+
+    # db_contact = []
+    # for contact in db.objects: 
+        # db_contact.append(contact.f_name)
+       #  print(contact.f_name, contact.l_name, contact.gender)
+    # return Contact.objects.only(Contact.f_name)
+    # query = QuerySet(collection='my_db', document='contacts')
+    # print(query.all_fields()) 
+    # return db_contact
 
 
 @app.post("/contacts/")
@@ -24,7 +41,6 @@ async def new_contact(f_name: str, l_name: str, sex: str) -> Contact:
     return n_contact
 
 # def update_contact(_id: UUID, n_f_name: Optional[str], n_l_name: Optional[str], n_gender: Optional[str]) -> Contact:
-
 
 def update_contact(contact_id: UUID):
     if contact_id is not None:
@@ -45,48 +61,40 @@ def del_contact(key: UUID):
     return
 
 
-@app.get("/contacts/")
-async def query_contacts():
-    '''for contact in Contact.objects:
-        print(contact.f_name, contact.l_name, contact.gender)'''
-    return Contact.objects.only(Contact.f_name)
-    # query = QuerySet(collection='my_db', document='contacts')
-    # print(query.all_fields())
+def local_run(): # Test cases only
+    while True:
+        print("\nWelcome to the local test API For interacting with MongoDB Atlas!\n")
+        print("What would you like to do?"
+              "\n1 - Query    (GET)"
+              "\n2 - Write    (POST)"
+              "\n3 - Update   (PUT)"
+              "\n4 - Delete   (DELETE)")
+        action = input("\n> ")
 
+        if action == '1':
+            print()
+            query_contacts()
+            input()
+        elif action == '2':
+            name = input('\nEnter name: ')
+            surname = input('Enter last name: ')
+            gender = input('Enter gender: ')
+            print('Attempting to save contact info...')
+            new_contact(name, surname, gender)
+            print('Contact info successfully saved!')
 
-'''while True:
-    print("\nWelcome to the local test API For interacting with MongoDB Atlas!\n")
-    print("What would you like to do?"
-          "\n1 - Query    (GET)"
-          "\n2 - Write    (POST)"
-          "\n3 - Update   (PUT)"
-          "\n4 - Delete   (DELETE)")
-    action = input("\n> ")
+        elif action == '3':
+            c_id = input("Enter the id of the contact you wish to update: ")
+            update_contact(contact_id=c_id)
+            input()
 
-    if action == '1':
-        print()
-        query_contacts()
-        input()
-    elif action == '2':
-        name = input('\nEnter name: ')
-        surname = input('Enter last name: ')
-        gender = input('Enter gender: ')
-        print('Attempting to save contact info...')
-        new_contact(name, surname, gender)
-        print('Contact info successfully saved!')
+        elif action == '4':
+            del_key = input("Enter the key of the contact you wish to delete: ")
+            print(type(del_key))
+            print(del_key)
+            del_contact(del_key)
+            input()
 
-    elif action == '3':
-        c_id = input("Enter the id of the contact you wish to update: ")
-        update_contact(contact_id=c_id)
-        input()
-
-    elif action == '4':
-        del_key = input("Enter the key of the contact you wish to delete: ")
-        print(type(del_key))
-        print(del_key)
-        del_contact(del_key)
-        input()
-'''
 
 if __name__ == "__main__":
     uvicorn.run("db_test:app", host="127.0.0.1", port=5000, log_level="info")
