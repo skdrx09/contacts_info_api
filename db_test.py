@@ -2,7 +2,7 @@ from data.mongo_setup import global_init
 from data.Contact import Contact, ContactUpdateRequest
 from mongoengine.errors import ValidationError
 from uuid import UUID
-from mongoengine import QuerySet, UUIDField, connect
+from mongoengine import queryset, UUIDField, connect, Document
 from mongoengine import *
 from typing import Optional
 from fastapi import FastAPI
@@ -10,23 +10,22 @@ import uvicorn
 
 
 app = FastAPI()
-# db = global_init()
-db = connect(alias="my_db", host='mongodb+srv://admin:1346795@clusterunit01.ngqrj.mongodb.net/my_db?retryWrites=true&w=majority')
+db = global_init()
 
 
 @app.get("/contacts/")
 async def query_contacts():
-    data = db.objects   # REVISAR
-    return data
+    db_contact = []
+    for data in Contact.objects:
+        q_format = {}
+        # q_format['id'] = data.id  # DOES NOT WORK
+        q_format['registered_date'] = data.registered_date
+        q_format['f_name'] = data.f_name
+        q_format['l_name'] = data.l_name
+        q_format['gender'] = data.gender
+        db_contact.append(q_format)
+    return db_contact
 
-    # db_contact = []
-    # for contact in db.objects: 
-        # db_contact.append(contact.f_name)
-       #  print(contact.f_name, contact.l_name, contact.gender)
-    # return Contact.objects.only(Contact.f_name)
-    # query = QuerySet(collection='my_db', document='contacts')
-    # print(query.all_fields()) 
-    # return db_contact
 
 
 @app.post("/contacts/")
