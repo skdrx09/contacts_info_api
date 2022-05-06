@@ -1,4 +1,3 @@
-from secrets import choice
 from mongoengine.fields import StringField, UUIDField, DateTimeField, EnumField
 from mongoengine import Document, ValidationError
 import datetime
@@ -37,3 +36,8 @@ class ContactUpdateRequest(Document):
     new_f_name = StringField(required=False)
     new_l_name = StringField(required=False)
     new_gender = EnumField(Gender, required=False)
+
+    meta = {  # Mongodb stuff
+        'db_alias': 'my_db',
+        'collection': 'contacts'
+    }
