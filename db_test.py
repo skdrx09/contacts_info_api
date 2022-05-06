@@ -5,7 +5,7 @@ from uuid import UUID
 from mongoengine import queryset, UUIDField, connect, Document
 from mongoengine import *
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import uvicorn
 
 
@@ -17,15 +17,15 @@ db = global_init()
 async def query_contacts():
     db_contact = []
     for data in Contact.objects:
-        q_format = {}
-        # q_format['id'] = data.id  # DOES NOT WORK
-        q_format['registered_date'] = data.registered_date
-        q_format['f_name'] = data.f_name
-        q_format['l_name'] = data.l_name
-        q_format['gender'] = data.gender
+        q_format = {'id': str(data.id),
+                    'registered_date': data.registered_date,
+                    'f_name': data.f_name,
+                    'l_name': data.l_name,
+                    'gender': data.gender
+                    }
+
         db_contact.append(q_format)
     return db_contact
-
 
 
 @app.post("/contacts/")
@@ -41,28 +41,42 @@ async def new_contact(f_name: str, l_name: str, sex: str) -> Contact:
 
 # def update_contact(_id: UUID, n_f_name: Optional[str], n_l_name: Optional[str], n_gender: Optional[str]) -> Contact:
 
-def update_contact(contact_id: UUID):
+
+# @app.put("/contacts/{contact_id}")
+def update_contact(contact_update: ContactUpdateRequest, contact_id: str):
     if contact_id is not None:
-        for ID in Contact.objects.only(id):
-            print(ID)
-            if contact_id == contact_id:
-                pass
+        for contact in Contact.objects:
+            if contact_id == str(contact.id):
+                if contact_update.new_f_name is not None:
+                    contact.f_name = contact_update.new_f_name
+                if contact_update.new_l_name is not None:
+                    contact.l_name = contact_update.new_l_name
+                if contact_update.new_gender is not None:
+                    contact.gender = contact_update.new_gender
+                return
+        raise HTTPException(
+            status_code=404,
+            detail=f"Contact with id: {contact_id} doest not exist"
+        )
     return
 
 
-def del_contact(key: UUID):
+@app.delete("/contacts/{contact_id}")
+def del_contact(contact_id: str):
     for contact in Contact.objects():
-        print(contact.id)
-        if contact.id == key:
-            print("THIS WOULD DELETE THE DOCUMENT")
-        else:
-            print("NO MATCHING DOC ID FOUND")
-    return
+        if str(contact.id) == contact_id:
+            Contact.delete(contact)
+            return
+    raise HTTPException(
+        status_code=404,
+        detail=f"Contact with id: {contact_id} doest not exist"
+    )
 
 
-def local_run(): # Test cases only
+def local_run():  # Test cases only
+    print("\nWelcome to the local test API For interacting with MongoDB Atlas!\n")
+
     while True:
-        print("\nWelcome to the local test API For interacting with MongoDB Atlas!\n")
         print("What would you like to do?"
               "\n1 - Query    (GET)"
               "\n2 - Write    (POST)"
@@ -84,7 +98,12 @@ def local_run(): # Test cases only
 
         elif action == '3':
             c_id = input("Enter the id of the contact you wish to update: ")
-            update_contact(contact_id=c_id)
+            n_contact = ContactUpdateRequest()
+            n_contact.new_f_name = input("Enter new first name (if any): ")
+            n_contact.new_l_name = input("Enter new last name (if any): ")
+            n_contact.new_gender = input("Enter new gender (if any): ")
+
+            update_contact(contact_update=n_contact, contact_id=c_id)
             input()
 
         elif action == '4':
@@ -96,4 +115,5 @@ def local_run(): # Test cases only
 
 
 if __name__ == "__main__":
-    uvicorn.run("db_test:app", host="127.0.0.1", port=5000, log_level="info")
+    # local_run()
+    uvicorn.run("db_test:app", host="127.0.0.1", port=5000, log_level="info", reload=True)
