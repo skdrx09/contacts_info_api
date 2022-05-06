@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 import uvicorn
 from data.models import Contact, Gender, ContactUpdateRequest
 from data.mongo_setup import global_init
-#from data.Contact import Contact, ContactUpdateRequest
+# from data.Contact import Contact, ContactUpdateRequest
 
 
 app = FastAPI()
