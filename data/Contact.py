@@ -3,11 +3,12 @@ from mongoengine import Document, ValidationError
 import datetime
 from enum import Enum
 from typing import Optional
+from pydantic import BaseModel
 
 
 class Gender(str, Enum):                # Accepts only two gender options
-    male = "male"
-    female = "female"
+    male = "M"
+    female = "F"
 
 
 GENDER = (("M", "Male"), ("F", "Female"))
@@ -32,12 +33,20 @@ class Contact(Document):                                            # DataBase m
     }
 
 
-class ContactUpdateRequest(Document):
+'''class ContactUpdateRequest(Document):
     new_f_name = StringField(required=False)
     new_l_name = StringField(required=False)
-    new_gender = EnumField(Gender, required=False)
+    # new_gender = EnumField(Gender, required=False)
+    new_gender = StringField(required=False, choices=GENDER)
 
     meta = {  # Mongodb stuff
         'db_alias': 'my_db',
         'collection': 'contacts'
-    }
+    }'''
+
+
+# Using Pydantic BaseModel for FastAPI classes requisites for PUT method.
+class ContactUpdateRequest(BaseModel):
+    new_f_name: Optional[str]
+    new_l_name: Optional[str]
+    new_gender: Optional[Gender]
