@@ -1,10 +1,5 @@
 from data.mongo_setup import global_init
 from data.Contact import Contact, ContactUpdateRequest
-from mongoengine.errors import ValidationError
-from uuid import UUID
-from mongoengine import queryset, UUIDField, connect, Document
-from mongoengine import *
-from typing import Optional
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
@@ -17,14 +12,14 @@ db = global_init()
 async def query_contacts():
     db_contact = []
     for data in Contact.objects:
-        q_format = {'id': str(data.id),
-                    'registered_date': data.registered_date,
-                    'f_name': data.f_name,
-                    'l_name': data.l_name,
-                    'gender': data.gender
-                    }
+        query_format = {'id': str(data.id),
+                        'registered_date': data.registered_date,
+                        'f_name': data.f_name,
+                        'l_name': data.l_name,
+                        'gender': data.gender
+                        }
 
-        db_contact.append(q_format)
+        db_contact.append(query_format)
     return db_contact
 
 
@@ -39,12 +34,13 @@ async def new_contact(f_name: str, l_name: str, sex: str) -> Contact:
 
     return n_contact
 
-# def update_contact(_id: UUID, n_f_name: Optional[str], n_l_name: Optional[str], n_gender: Optional[str]) -> Contact:
 
+# def update_contact(contact_id: str, n_f_name: Optional[str], n_l_name: Optional[str], n_gender: Optional[str]):
 
-# @app.put("/contacts/{contact_id}")
-def update_contact(contact_update: ContactUpdateRequest, contact_id: str):
+@app.put("/contacts/{contact_id}")
+def update_contact(contact_update: ContactUpdateRequest, contact_id: str):  # Needs an update class or else makes each argument required.
     if contact_id is not None:
+        # contact_update = ContactUpdateRequest(new_f_name=n_f_name, new_l_name=n_l_name, new_gender=n_gender)
         for contact in Contact.objects:
             if contact_id == str(contact.id):
                 if contact_update.new_f_name is not None:
@@ -53,6 +49,7 @@ def update_contact(contact_update: ContactUpdateRequest, contact_id: str):
                     contact.l_name = contact_update.new_l_name
                 if contact_update.new_gender is not None:
                     contact.gender = contact_update.new_gender
+                contact.save()  # Saves the contact with updated information.
                 return
         raise HTTPException(
             status_code=404,
@@ -62,7 +59,7 @@ def update_contact(contact_update: ContactUpdateRequest, contact_id: str):
 
 
 @app.delete("/contacts/{contact_id}")
-def del_contact(contact_id: str):
+async def del_contact(contact_id: str):
     for contact in Contact.objects():
         if str(contact.id) == contact_id:
             Contact.delete(contact)
@@ -73,7 +70,7 @@ def del_contact(contact_id: str):
     )
 
 
-def local_run():  # Test cases only
+def local_run():  # For test purposes only. WARNING: Some methods such as GET might not work locally due to the use of async functionalities.
     print("\nWelcome to the local test API For interacting with MongoDB Atlas!\n")
 
     while True:
@@ -100,10 +97,18 @@ def local_run():  # Test cases only
             c_id = input("Enter the id of the contact you wish to update: ")
             n_contact = ContactUpdateRequest()
             n_contact.new_f_name = input("Enter new first name (if any): ")
-            n_contact.new_l_name = input("Enter new last name (if any): ")
-            n_contact.new_gender = input("Enter new gender (if any): ")
+            if n_contact.new_f_name == '':
+                n_contact.new_f_name = None     # It needs the empty value to be none instead of an empty string in order to work
 
-            update_contact(contact_update=n_contact, contact_id=c_id)
+            n_contact.new_l_name = input("Enter new last name (if any): ")
+            if n_contact.new_l_name == '':
+                n_contact.new_l_name = None
+
+            n_contact.new_gender = input("Enter new gender (if any): ")
+            if n_contact.new_gender == '':
+                n_contact.new_gender = None
+
+            update_contact(n_contact, contact_id=c_id)
             input()
 
         elif action == '4':
