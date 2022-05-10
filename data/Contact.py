@@ -9,6 +9,7 @@ from pydantic import BaseModel
 class Gender(str, Enum):                # Accepts only two gender options
     male = "M"
     female = "F"
+    none = ""
 
 
 GENDER = (("M", "Male"), ("F", "Female"))
@@ -47,6 +48,6 @@ class Contact(Document):                                            # DataBase m
 
 # Using Pydantic BaseModel for FastAPI classes requisites for PUT method.
 class ContactUpdateRequest(BaseModel):
-    new_f_name: Optional[str]
-    new_l_name: Optional[str]
-    new_gender: Optional[Gender]
+    new_f_name: Optional[str] = 'name'
+    new_l_name: Optional[str] = 'surname'
+    new_gender: Optional[Gender] = None

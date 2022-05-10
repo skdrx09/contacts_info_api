@@ -38,16 +38,16 @@ async def new_contact(f_name: str, l_name: str, sex: str) -> Contact:
 # def update_contact(contact_id: str, n_f_name: Optional[str], n_l_name: Optional[str], n_gender: Optional[str]):
 
 @app.put("/contacts/{contact_id}")
-def update_contact(contact_update: ContactUpdateRequest, contact_id: str):  # Needs an update class or else makes each argument required.
+async def update_contact(contact_update: ContactUpdateRequest, contact_id: str):  # Needs an update class or else makes each argument required.
     if contact_id is not None:
         # contact_update = ContactUpdateRequest(new_f_name=n_f_name, new_l_name=n_l_name, new_gender=n_gender)
         for contact in Contact.objects:
             if contact_id == str(contact.id):
-                if contact_update.new_f_name is not None:
+                if contact_update.new_f_name is not None and contact_update.new_f_name != 'name':
                     contact.f_name = contact_update.new_f_name
-                if contact_update.new_l_name is not None:
+                if contact_update.new_l_name is not None and contact_update.new_l_name != 'surname':
                     contact.l_name = contact_update.new_l_name
-                if contact_update.new_gender is not None:
+                if contact_update.new_gender is not None and contact_update.new_gender != "":
                     contact.gender = contact_update.new_gender
                 contact.save()  # Saves the contact with updated information.
                 return
